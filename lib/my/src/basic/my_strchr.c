@@ -7,9 +7,9 @@
 
 #include <stdlib.h>
 
-int my_strchr_index(char const *str, char c)
+ssize_t my_strchr_index(char const *str, char c)
 {
-    int i = 0;
+    ssize_t i = 0;
 
     while (str[i] != 0){
         if (str[i] == c)
@@ -17,6 +17,18 @@ int my_strchr_index(char const *str, char c)
         i ++;
     }
     return (-1);
+}
+
+size_t my_strchr_count(char const *str, char c)
+{
+    size_t i = 0;
+    size_t count = 0;
+
+    while (str[i] != '\0'){
+        count += str[i] == c;
+        i ++;
+    }
+    return (count);
 }
 
 char *my_strchr(char const *str, char c)

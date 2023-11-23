@@ -38,16 +38,16 @@ l_elem *list_last_element(l_list *l)
     return (e);
 }
 
-void list_destroy(l_list *l)
+l_list *list_destroy(l_list *l)
 {
     size_t i = 0;
     l_elem *current;
 
     if (l == NULL)
-        return;
+        return (NULL);
     if (l->first == NULL){
         free(l);
-        return;
+        return (NULL);
     }
     while (i < l->len){
         current = l->first;
@@ -56,6 +56,7 @@ void list_destroy(l_list *l)
         i ++;
     }
     free(l);
+    return (NULL);
 }
 
 l_list *list_create(void(*del)(void *))

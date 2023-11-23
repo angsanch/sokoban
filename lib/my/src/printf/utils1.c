@@ -9,7 +9,6 @@
 #include <stddef.h>
 #include <stdarg.h>
 #include <stdlib.h>
-#include "../../include/data_parameter.h"
 #include "../../include/my_printf.h"
 #include "../../include/my.h"
 #include <stdio.h>
@@ -97,33 +96,32 @@ char *my_lluitoa_base(unsigned long long int nb, char const *base,
     return (result);
 }
 
-size_t my_putstrp(char *str, void(*put)(char))
+static char *prepare_parts(parameter *param, char *sign, char *number)
 {
-    size_t i = 0;
+    size_t len = my_strlen(sign) + my_strlen(number);
+    size_t min_len = param->width;
+    size_t used = min_len;
+    char *result;
 
-    while (str[i] != 0){
-        (*put)(str[i]);
-        i ++;
-    }
-    return (i);
+    if (len > min_len)
+        used = len;
+    result = malloc(sizeof(char) * (used + 1));
+    if (result == NULL)
+        return (NULL);
+    if (!param->flags[0])
+        my_memset(result, ' ', used - len);
+    result[used - len] = '\0';
+    my_strcat(result, sign);
+    my_strcat(result, number);
+    if (param->flags[0])
+        my_memset(result + my_strlen(result), ' ', used - len);
+    result[used] = '\0';
+    return (result);
 }
 
-int my_putnchrp(char c, int n, void(*put)(char))
+static void set_sign(parameter *param, int plus, char *sign)
 {
-    int i = 0;
-
-    while (i < n){
-        (*put)(c);
-        i ++;
-    }
-    return (i);
-}
-
-static int print_num_flags(parameter *param, char *num, int plus,
-    void(*put)(char))
-{
-    char sign[3] = "\0\0\0";
-
+    my_memset(sign, '\0', 3);
     if (!plus)
         sign[0] = '-';
     if (param->flags[1] && plus)
@@ -136,47 +134,67 @@ static int print_num_flags(parameter *param, char *num, int plus,
         if (param->specifier == 'x')
             my_strcpy(sign, "0x");
         if (param->specifier == 'X')
-            my_strcpy(sign, "0X");
+        my_strcpy(sign, "0X");
     }
-    return (print_parsed_nb(param, sign, num, put));
 }
 
-int signed_decimal_integer(parameter *param, va_list *ap, void(*put)(char),
-    int *n)
+char *signed_decimal_integer(parameter *param, va_list *ap, int n)
 {
     long long int num = get_lld(param->length, ap);
     unsigned long long int nb = num;
-    char *text;
+    size_t min_len = param->precision;
+    char *parsed_number;
+    char sign[3];
+    char *result;
 
     (void)n;
     if (num < 0)
         nb = -num;
-    text = my_lluitoa_base(nb, "0123456789", param->precision);
-    if (text == NULL)
-        return (0);
-    nb = print_num_flags(param, text, num >= 0, put);
-    free(text);
-    return (nb);
+    set_sign(param, num >= 0, sign);
+    if (param->flags[4] && !param->flags[0])
+        min_len = param->width - my_strlen(sign);
+    parsed_number = my_lluitoa_base(nb, "0123456789", min_len);
+    if (parsed_number == NULL)
+        return (NULL);
+    result = prepare_parts(param, sign, parsed_number);
+    free(parsed_number);
+    return (result);
 }
 
-int unsigned_decimal_integer(parameter *param, va_list *ap, void(*put)(char),
-    int *n)
+static void set_base(char specifier, char *base)
+{
+    switch (specifier){
+        case 'u':
+            my_strcpy(base, "0123456789");
+            break;
+        case 'o':
+            my_strcpy(base, "01234567");
+            break;
+        case 'x':
+            my_strcpy(base, "0123456789abcdef");
+            break;
+        case 'X':
+            my_strcpy(base, "0123456789ABCDEF");
+            break;
+    }
+}
+
+char *unsigned_decimal_integer(parameter *param, va_list *ap, int n)
 {
     unsigned long long int num = get_llu(param->length, ap);
-    char *text;
-    char base[] = "0123456789abcdef";
+    char *parsed_number;
+    char base[17];
+    char sign[3];
+    size_t min_len = param->precision;
+    char *result;
 
     (void)n;
-    if (param->specifier == 'o')
-        base[8] = 0;
-    if (param->specifier == 'u')
-        base[10] = 0;
-    if (param->specifier == 'X')
-        my_strupcase(base);
-    text = my_lluitoa_base(num, base, param->precision);
-    if (text == NULL)
-        return (0);
-    num = print_num_flags(param, text, 1, put);
-    free(text);
-    return (num);
+    set_sign(param, 1, sign);
+    set_base(param->specifier, base);
+    parsed_number = my_lluitoa_base(num, base, min_len);
+    if (parsed_number == NULL)
+        return (NULL);
+    result = prepare_parts(param, sign, parsed_number);
+    free(parsed_number);
+    return (result);
 }

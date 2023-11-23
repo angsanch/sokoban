@@ -12,10 +12,15 @@
 int my_printf(char const *format, ...)
 {
     va_list ap;
-    int printed;
+    char *result;
+    int len;
 
     va_start(ap, format);
-    printed = genericf(&my_putchar, format, &ap);
+    result = genericf(format, &ap);
     va_end(ap);
-    return (printed);
+    if (result == NULL)
+        return (-1);
+    len = my_putstr(result);
+    free(result);
+    return (len);
 }

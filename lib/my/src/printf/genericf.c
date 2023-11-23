@@ -7,125 +7,102 @@
 
 #include <stdarg.h>
 #include <stdlib.h>
-#include "../../include/data_parameter.h"
 #include "../../include/my_printf.h"
 #include "../../include/my.h"
 #include <stdio.h>
 
 char const *specifiers = "diuoxXfFeEgGaAcspn%";
-int(*prints[])(parameter *param, va_list *ap, void(*put)(char), int *n) = {
+char *(*param_str[])(parameter *param, va_list *ap, int n) = {
     &signed_decimal_integer, &signed_decimal_integer,
     &unsigned_decimal_integer, &unsigned_decimal_integer,
     &unsigned_decimal_integer, &unsigned_decimal_integer,
-    &length_exporter, &length_exporter,
-    &length_exporter, &length_exporter,
-    &length_exporter, &length_exporter,
-    &length_exporter, &length_exporter,
+    &signed_decimal_integer, &signed_decimal_integer,
+    &signed_decimal_integer, &signed_decimal_integer,
+    &signed_decimal_integer, &signed_decimal_integer,
+    &signed_decimal_integer, &signed_decimal_integer,
     &character_print, &string_print,
-    &pointer_print, &length_exporter,
-    &print_percentage
+    &pointer_print, &print_percentage
 };
 
-static int print_until_parameter(char const *format, int *i, void(*put)(char))
+static void list_destroy_param(void *p)
 {
-    int n = 0;
-
-    while (format[*i] != '\0'){
-        if (format[*i] != '%'){
-            (*put)(format[*i]);
-            *i += 1;
-            n ++;
-            continue;
-        }
-        break;
-    }
-    return (n);
+    destroy_param((parameter *)p);
 }
 
-static void nothing(char c)
-{
-    (void)c;
-}
-
-static int param_amount(char const *format)
-{
-    int i = 0;
-    int n = 0;
-
-    while (format[i] != '\0'){
-        print_until_parameter(format, &i, &nothing);
-        if (format[i] != '\0'){
-            destroy_param(parse_parameter(format, &i));
-            n ++;
-        }
-    }
-    return (n);
-}
-
-static parameter **free_params(parameter **params)
-{
-    size_t i = 0;
-
-    while (params[i] != NULL){
-        destroy_param(params[i]);
-        i ++;
-    }
-    free(params);
-    return (NULL);
-}
-
-static parameter **parse_format(char const *format)
-{
-    int n = param_amount(format);
-    int p = 0;
-    int i = 0;
-    parameter **params = malloc(sizeof(parameter *) * (n + 1));
-
-    if (params == NULL)
-        return (NULL);
-    while (p < n){
-        print_until_parameter(format, &i, &nothing);
-        params[p] = parse_parameter(format, &i);
-        params[p + 1] = NULL;
-        if (my_strchr_index(specifiers, params[p]->specifier) < 0 ||
-            params[p] == NULL)
-            return (free_params(params));
-        p ++;
-    }
-    params[n] = NULL;
-    return (params);
-}
-
-void print_parameter(parameter *param, va_list *ap, void(*put)(char), int *n)
+char *string_parameter(parameter *param, va_list *ap, int *n)
 {
     int index = my_strchr_index(specifiers, param->specifier);
+    char *str;
 
     if (index == -1)
-        return;
+        return (NULL);
     if (param->width == -1)
         param->width = va_arg(*ap, int);
     if (param->precision == -2)
         param->precision = va_arg(*ap, int);
-    *n += (*prints[index])(param, ap, put, n);
+    str = (*param_str[index])(param, ap, *n);
+    *n += my_strlen(str);
+    return (str);
 }
 
-int genericf(void (*put)(char), char const *format, va_list *ap)
+static l_list *parse_format(char const *format, va_list *ap, int *n)
+{
+    int i = 0;
+    l_list *params = list_create(&list_destroy_param);
+    parameter *new;
+
+    if (params == NULL)
+        return (NULL);
+    while (format[i]){
+        if (format[i] != '%' && format[i]){
+            i ++;
+            *n += 1;
+            continue;
+        }
+        new = parse_parameter(format, &i);
+        if (new == NULL || !list_append(params, new))
+            return (list_destroy(params));
+        new->str = string_parameter(new, ap, n);
+        if (new->str == NULL)
+            return (list_destroy(params));
+    }
+    return (params);
+}
+
+void prepare_result(char *result, l_list *params, char const *format)
 {
     int i = 0;
     int n = 0;
-    size_t p = 0;
-    parameter **params = parse_format(format);
+    int len;
+    parameter *p;
+
+    while (format[i]){
+        if (format[i] != '%' && format[i]){
+            result[n] = format[i];
+            i ++;
+            n ++;
+            continue;
+        }
+        p = params->first->content;
+        len = my_strlen(p->str);
+        my_strcpy(result + n, p->str);
+        n += len;
+        i += p->characters;
+        list_pop_first(params);
+    }
+    result[n] = '\0';
+}
+
+char *genericf(char const *format, va_list *ap)
+{
+    int n = 0;
+    l_list *params = parse_format(format, ap, &n);
+    char *result = malloc(sizeof(char) * (n + 1));
 
     if (params == NULL)
-        return (-1);
-    while (format[i] != '\0'){
-        n += print_until_parameter(format, &i, put);
-        if (params[p] != NULL && format[i] != 0){
-            print_parameter(params[p], ap, put, &n);
-            i += params[p]->characters;
-            p ++;
-        }
-    }
-    free_params(params);
-    return (n);
+        return (NULL);
+    if (result != NULL)
+        prepare_result(result, params, format);
+    list_destroy(params);
+    return (result);
 }

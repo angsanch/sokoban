@@ -6,24 +6,18 @@
 */
 
 #include <stdlib.h>
-#include "../../include/data_parameter.h"
+#include "../../include/my_printf.h"
 #include "../../include/my.h"
 
 static char flags_called(char const *format, parameter *p, int i)
 {
-    while (format[i] == '-' || format[i] == '+' || format[i] == 32 ||
-        format[i] == '#' || format[i] == '0'){
-        if (format[i] == '-')
-            p->flags[0] = 1;
-        if (format[i] == '+')
-            p->flags[1] = 1;
-        if (format[i] == 32)
-            p->flags[2] = 1;
-        if (format[i] == '#')
-            p->flags[3] = 1;
-        if (format[i] == '0')
-            p->flags[4] = 1;
-        i++;
+    int index = my_strchr_index("-+ #0", format[i]);
+
+    while (index != -1){
+        p->flags[index] = 1;
+        index = my_strchr_index("-+ #0", format[i]);
+        if (index >= 0)
+            i++;
     }
     return (i);
 }
@@ -93,11 +87,13 @@ parameter *create_param(void)
     p->width = 0;
     p->precision = -1;
     p->length = 0;
+    p->str = NULL;
     return (p);
 }
 
 void destroy_param(parameter *p)
 {
+    free(p->str);
     free(p);
 }
 

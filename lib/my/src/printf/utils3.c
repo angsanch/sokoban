@@ -6,12 +6,16 @@
 */
 
 #include <stdarg.h>
-#include "../../include/data_parameter.h"
+#include "../../include/my.h"
+#include "../../include/my_printf.h"
 
-int print_percentage(parameter *param, va_list *ap, void(*put)(char))
+char *print_percentage(parameter *param, va_list *ap, int n)
 {
-    (void)(param);
+    /*(void)(param);
     (void)(ap);
-    (*put)('%');
-    return (1);
+    (*put)('%');*/
+    (void)param;
+    (void)ap;
+    (void)n;
+    return (my_strdup("%"));
 }

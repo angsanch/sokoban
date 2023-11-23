@@ -62,3 +62,11 @@ void **list_export(l_list *l)
     }
     return (export);
 }
+
+void list_pop_first(l_list *l)
+{
+    l_elem *e = l->first;
+
+    l->first = e->next;
+    destroy_elem(e, l->del);
+}

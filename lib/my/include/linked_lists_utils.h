@@ -12,7 +12,7 @@
     #include "my.h"
 
 l_elem *create_elem(void *content);
-void destroy_element(l_elem *e, void(*del)(void *));
+void destroy_elem(l_elem *e, void(*del)(void *));
 void destroy_list(l_list *l);
 l_list *create_list(void(*del)(void *));
 size_t list_len(l_list *l);

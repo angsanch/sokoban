@@ -39,7 +39,7 @@ void *my_memset(void *b, int c, size_t len);
 void my_putchar(char c);
 int my_putnbr_base(int nbr, char const *base);
 void my_put_nbr(int nb);
-void my_putstr(char const *str);
+size_t my_putstr(char const *str);
 void swap_chr(char *a, char *b);
 char *my_revstr(char *str);
 void my_showmem(char const *str, size_t size);
@@ -48,7 +48,8 @@ void my_show_word_array(char *const *tab);
 void my_sort_int_array(int *array, size_t size);
 char *my_strcapitalize(char *str);
 char *my_strcat(char *dest, char const *src);
-int my_strchr_index(char const *str, char c);
+ssize_t my_strchr_index(char const *str, char c);
+size_t my_strchr_count(char const *str, char c);
 char *my_strchr(char const *str, char c);
 char *my_strrchr(char const *str, char c);
 int my_strcmp(char const *s1, char const *s2);
@@ -78,10 +79,11 @@ void my_swap(int *a, int *b);
 
 int my_printf(char const *format, ...);
 
-void list_destroy(l_list *l);
+l_list *list_destroy(l_list *l);
 l_list *list_create(void(*del)(void *));
 size_t list_len(l_list *l);
 int list_append(l_list *l, void *content);
 void **list_export(l_list *l);
+void list_pop_first(l_list *l);
 
 #endif
