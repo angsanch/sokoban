@@ -50,12 +50,6 @@ C_FILES = src/basic/my_strupcase.c \
 			src/basic/my_strchr.c \
 			src/basic/my_strrchr.c \
 			src/basic/my_memcpy.c \
-			src/printf/genericf.c \
-			src/printf/my_printf.c \
-			src/printf/parameter_utils.c \
-			src/printf/utils1.c \
-			src/printf/utils2.c \
-			src/printf/utils3.c \
 			src/linked_lists/basic_list.c \
 			src/linked_lists/simple_operations.c
 
