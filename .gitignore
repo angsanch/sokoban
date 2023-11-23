@@ -1,0 +1,9 @@
+*.out
+*.o
+*.swp
+*.a
+\#*\#
+*~
+
+include/my.h
+my_sokoban
