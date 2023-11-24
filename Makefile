@@ -9,7 +9,8 @@ CC=gcc
 
 CFLAGS=-Wall -Werror -Wextra
 
-C_FILES = src/board_utils.c
+C_FILES = src/board_utils.c \
+			src/prepare_board.c
 
 O_FILES = $(C_FILES:.c=.o)
 

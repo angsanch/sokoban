@@ -29,5 +29,6 @@ int main(int argc, char **argv)
     b = board_from_file(argv[1]);
     if (b == NULL)
         return (report_error("Error preparing the board\n"));
+    destroy_board(b);
     return (0);
 }

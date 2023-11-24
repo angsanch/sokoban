@@ -31,7 +31,9 @@ typedef struct board_data{
     gameinf game;
 } board;
 
+board *create_empty_board(void);
 board *board_from_file(char const *file);
 void destroy_board(board *b);
+ssize_t file_to_buffer(char const *path, char **buf);
 
 #endif
