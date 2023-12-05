@@ -22,17 +22,20 @@ static int report_error(char *str)
 
 static int print_help(void)
 {
-    my_putstr("USAGE\n"\
-    "\t./my_sokoban map\n"\
-    "DESCRIPTION\n"\
-    "\tmap file representing the warehouse map, containing ‘#’ for walls,\n"\
-    "\t\t‘P’ for the player, ‘X’ for boxes and ‘O’ for storage locations.\n");
+    my_putstr("USAGE\n");
+    my_putstr("\t./my_sokoban map\n");
+    my_putstr("DESCRIPTION\n");
+    my_putstr("\tmap file representing the warehouse map, ");
+    my_putstr("containing ‘#’ for walls,\n");
+    my_putstr("\t\t‘P’ for the player, ");
+    my_putstr("‘X’ for boxes and ‘O’ for storage locations.\n");
     return (84);
 }
 
 static int game(char *path)
 {
     board *b = board_from_file(path);
+
     if (b == NULL)
         return (report_error("Error preparing the board\n"));
     destroy_board(b);
@@ -44,7 +47,7 @@ int main(int argc, char **argv)
     if (argc != 2)
         return (report_error("Invalid amount of parameters.\n"));
     if (my_strcmp(argv[1], "-h") == 0)
-        return(print_help());
+        return (print_help());
     else
         return (game(argv[1]));
 }
