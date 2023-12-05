@@ -21,8 +21,8 @@ static int prepare_gameinf(gameinf *game)
 {
     game->boxes = list_create(&free);
     game->locations = list_create(&free);
-    game->player.x = 0;
-    game->player.y = 0;
+    game->player.x = -1;
+    game->player.y = -1;
     if (game->boxes == NULL || game->boxes == NULL){
         destroy_gameinf(game);
         return (0);

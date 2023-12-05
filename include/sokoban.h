@@ -12,8 +12,8 @@
     #include <stdlib.h>
 
 typedef struct tile_position{
-    size_t x;
-    size_t y;
+    ssize_t x;
+    ssize_t y;
 } tile;
 
 typedef struct game_info{

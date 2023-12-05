@@ -8,10 +8,27 @@
 #include "../include/my.h"
 #include "../include/sokoban.h"
 
-static int analize_positions(board *b, size_t y)
+static int analize_tile(board *b, size_t x, size_t y, tile **t)
 {
-    (void)b;
-    (void)y;
+    l_list *lists[] = {b->game.boxes, b->game.locations};
+
+    switch (b->map[y][x]){
+        case '#':
+        case ' ':
+            break;
+        case 'X':
+        case 'O':
+            list_append(lists[b->map[y][x] == 'O'], *t);
+            *t = NULL;
+            break;
+        case 'P':
+            if (b->game.player.x != -1 ||  b->game.player.y != -1)
+                return (0);
+            b->game.player = **t;
+            break;
+        default:
+            return (0);
+    }
     return (1);
 }
 
@@ -27,25 +44,9 @@ static int analize_chars(board *b, size_t y)
             return (0);
         t->x = x;
         t->y = y;
-        switch (b->map[y][x]){
-            case '#':
-            case ' ':
-                break;
-            case 'X':
-                list_append(b->game.boxes, t);
-                t = NULL;
-                break;
-            case 'O':
-                list_append(b->game.locations, t);
-                t = NULL;
-                break;
-            case 'P':
-                if (b->game.player.x + b->game.player.y != 0)
-                    return (0);
-                b->game.player = *t;
-                break;
-            default:
-                return (0);
+        if (!analize_tile(b, x, y, &t)){
+            free(t);
+            return (0);
         }
         x ++;
     }
@@ -59,7 +60,7 @@ static int check_board(board *b)
     size_t y = 0;
 
     while (y < b->height){
-        if (!(analize_positions(b, y) && analize_chars(b, y)))
+        if (!analize_chars(b, y))
             return (0);
         y ++;
     }
