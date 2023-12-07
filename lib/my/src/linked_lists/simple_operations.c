@@ -43,26 +43,6 @@ int list_append(l_list *l, void *content)
     return (1);
 }
 
-void **list_export(l_list *l)
-{
-    void **export;
-    size_t i = 0;
-    l_elem *e;
-
-    if (l->len == 0)
-        return (NULL);
-    export = malloc(sizeof(char *) * l->len);
-    if (export == NULL)
-        return (NULL);
-    e = l->first;
-    while (i < l->len){
-        export[i] = e->content;
-        e = e->next;
-        i ++;
-    }
-    return (export);
-}
-
 void list_pop_first(l_list *l)
 {
     l_elem *e = l->first;

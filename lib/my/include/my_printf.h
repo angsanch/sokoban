@@ -27,6 +27,7 @@ int my_printf(char const *format, ...);
 char *genericf(char const *format, va_list *ap);
 parameter *parse_parameter(char const *format, int *i);
 void destroy_param(parameter *p);
+char *prepare_parts(parameter *param, char *sign, char *number);
 char *my_lluitoa_base(unsigned long long int nb, char const *base,
     int min_len);
 

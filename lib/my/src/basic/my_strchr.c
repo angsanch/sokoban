@@ -42,3 +42,13 @@ char *my_strchr(char const *str, char c)
     }
     return (0);
 }
+
+size_t my_strchr_count_consecutive(char const *str)
+{
+    size_t i = 0;
+    char c = str[0];
+
+    while (str[i] && str[i] == c)
+        i ++;
+    return (i);
+}

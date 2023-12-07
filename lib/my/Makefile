@@ -50,10 +50,27 @@ C_FILES = src/basic/my_strupcase.c \
 			src/basic/my_strchr.c \
 			src/basic/my_strrchr.c \
 			src/basic/my_memcpy.c \
+			src/printf/genericf.c \
+			src/printf/f_functions.c \
+			src/printf/parameter_utils.c \
+			src/printf/utils1.c \
+			src/printf/utils2.c \
 			src/linked_lists/basic_list.c \
-			src/linked_lists/simple_operations.c
+			src/linked_lists/simple_operations.c \
+			src/linked_lists/iter_tools.c \
+			src/engine/creation.c \
+			src/engine/destruction.c \
+			src/engine/ticks.c \
+			src/engine/finder.c \
+			src/engine/sprite_helper.c \
+			src/engine/fps_controller.c \
+            src/engine/sprite_creation.c
+
 
 O_FILES = $(C_FILES:.c=.o)
+
+HEADERS = include/my.h \
+			include/structs.h
 
 NAME=libmy.a
 
@@ -61,7 +78,7 @@ $(NAME): $(O_FILES)
 	ar -rsc $(NAME) $(O_FILES)
 	cp $(NAME) ../
 	mkdir -p ../../include
-	cp include/my.h ../../include
+	cp $(HEADERS) ../../include
 
 all: $(NAME)
 

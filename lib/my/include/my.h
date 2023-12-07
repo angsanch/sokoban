@@ -10,17 +10,7 @@
 
     #include <stdlib.h>
     #include <unistd.h>
-
-typedef struct linked_list_element{
-    void *content;
-    struct linked_list_element *next;
-} l_elem;
-
-typedef struct linked_list_container{
-    size_t len;
-    l_elem *first;
-    void(*del)(void *);
-} l_list;
+    #include "structs.h"
 
 char *convert_base(char const *nbr,
     char const *base_from, char const *base_to);
@@ -78,6 +68,8 @@ char *my_strupcase(char *str);
 void my_swap(int *a, int *b);
 
 int my_printf(char const *format, ...);
+int my_sprintf(char *str, char const *format, ...);
+int my_dprintf(int fd, char const *format, ...);
 
 l_list *list_destroy(l_list *l);
 l_list *list_create(void(*del)(void *));
@@ -85,5 +77,34 @@ size_t list_len(l_list *l);
 int list_append(l_list *l, void *content);
 void **list_export(l_list *l);
 void list_pop_first(l_list *l);
+void list_iter(l_list *l, void(*func)(void *));
+void list_iter_data(l_list *l, void *data, void(*func)(void *, void *));
+
+dn_sound *search_sound(dn_scene *scene, size_t id);
+dn_texture *search_texture(dn_scene *scene, size_t id);
+dn_sprite *search_sprite(dn_scene *scene, size_t id);
+dn_scene *search_scene(dn_window *window, size_t id);
+dn_scene *create_scene(dn_window *window);
+void add_sprite(dn_scene *scene);
+void add_texture(dn_scene *scene, dn_texture *texture);
+void add_functions(dn_scene *scene,
+    void(*tick)(struct dn_sprite_container *, dn_envinfo *),
+    void(*event)(struct dn_sprite_container *, dn_envinfo *));
+void add_push_sprite(dn_scene *scene);
+void add_data(dn_scene *scene, void *data, void(*destroy_data)(void *));
+void sprite_link_texture(dn_sprite *sprite, dn_texture *texture);
+void sprite_add_data(dn_sprite *sprite, void *data,
+    void(*destroy_data)(void *));
+void sprite_set_rect(dn_sprite *sprite, size_t x, size_t y);
+int is_on_sprite(dn_window *window, dn_sprite *sprite, int x, int y);
+dn_texture *create_texture(dn_scene *scene, char const *path,
+    size_t x_tiles, size_t y_tiles);
+dn_sprite *create_sprite(dn_scene *scene);
+dn_window *create_window(int width, int height, char *name, sfUint32 style);
+void destroy_window(dn_window *window);
+int tick_window(dn_window *window);
+dn_fps *create_fps_limiter(float max);
+void next_frame(dn_fps *fps);
+void destroy_fps_limiter(dn_fps *fps);
 
 #endif
