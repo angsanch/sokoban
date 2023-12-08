@@ -20,49 +20,62 @@ static char get_tile(board *b, ssize_t x, ssize_t y)
     return (b->map[y][x]);
 }
 
-/*static void move(board *b, int x, int y)
+static tile *search_box(board *b, ssize_t x, ssize_t y)
 {
-    ssize_t *px = &b->game.player.x;
-    ssize_t *py = &b->game.player.y;
+    l_elem *e = b->game.boxes->first;
+    tile *box;
 
-    b->map[*py][*px] = ' ';
-    *px += x;
-    *py += y;
-    if (*py < 0)
-        *py = 0;
-    if (*py >= b->height)
-        *py = b->height - 1;
-    if (*px < 0)
-        *px = 0;
-    if (!b->map[*py][*px])
-        *px = my_strlen(b->);
-    b->map[*py][*px] = 'P';
-}*/
+    while (e != NULL){
+        box = e->content;
+        if (box->x == x && box->y == y)
+            return (box);
+        e = e->next;
+    }
+    return (NULL);
+}
 
 static void vertical_move(board *b, int y)
 {
     tile *player = &b->game.player;
     tile new = *player;
+    char m_tile = get_tile(b, new.x, new.y + y);
+    char n_tile = get_tile(b, new.x, new.y + y + y);
+    tile *box;
 
-    new.y += y;
-    if (get_tile(b, new.x, new.y) == '#')
-        new = *player;
-    b->map[player->y][player->x] = ' ';
-    b->map[new.y][new.x] = 'P';
-    *player = new;
+    if (m_tile == 'X'){
+        box = search_box(b, player->x, player->y + y);
+        if (n_tile == ' ' || n_tile == 'O'){
+            player->y += y;
+            box->y += y;
+        }
+    } else {
+        new.y += y;
+        if (m_tile == '#')
+            new = *player;
+        *player = new;
+    }
 }
 
 static void horizontal_move(board *b, int x)
 {
     tile *player = &b->game.player;
     tile new = *player;
+    char m_tile = get_tile(b, new.x + x, new.y);
+    char n_tile = get_tile(b, new.x + x + x, new.y);
+    tile *box;
 
-    new.x += x;
-    if (get_tile(b, new.x, new.y) == '#')
-        new = *player;
-    b->map[player->y][player->x] = ' ';
-    b->map[new.y][new.x] = 'P';
-    *player = new;
+    if (m_tile == 'X'){
+        box = search_box(b, player->x + x, player->y);
+        if (n_tile == ' ' || n_tile == 'O'){
+            player->x += x;
+            box->x += x;
+        }
+    } else {
+        new.x += x;
+        if (m_tile == '#')
+            new = *player;
+        *player = new;
+    }
 }
 
 void move_soko(board *b, int key)
@@ -81,4 +94,5 @@ void move_soko(board *b, int key)
             horizontal_move(b, 1);
             break;
     }
+    redraw(b);
 }
