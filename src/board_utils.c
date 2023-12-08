@@ -63,7 +63,7 @@ ssize_t file_to_buffer(char const *path, char **buff)
     struct stat file_stat;
     int fd = open(path, O_RDONLY);
 
-    if (stat(path, &file_stat) != 0 || fd < 0){
+    if (stat(path, &file_stat) != 0 || fd < 0 || !S_ISREG(file_stat.st_mode)){
         if (fd >= 0)
             close(fd);
         return (-1);
@@ -86,9 +86,41 @@ void print_board(board *b)
 {
     ssize_t i = 0;
 
+    if (b == NULL)
+        return;
     while (i < b->height){
         my_putstr(b->map[i]);
         my_putchar('\n');
         i ++;
     }
+}
+
+static void draw_location_list(void *location_void, void *b_void)
+{
+    tile *location = location_void;
+    board *b = b_void;
+
+    b->map[location->y][location->x] = 'O';
+}
+
+static void draw_box_list(void *location_void, void *b_void)
+{
+    tile *location = location_void;
+    board *b = b_void;
+
+    b->map[location->y][location->x] = 'X';
+}
+
+void redraw(board *b)
+{
+    ssize_t i = 0;
+
+    while (i < b->buff_size){
+        if (b->buff[i] != '#' && b->buff[i] != '\0')
+            b->buff[i] = ' ';
+        i ++;
+    }
+    list_iter_data(b->game.locations, b, &draw_location_list);
+    list_iter_data(b->game.boxes, b, &draw_box_list);
+    b->map[b->game.player.y][b->game.player.x] = 'P';
 }
