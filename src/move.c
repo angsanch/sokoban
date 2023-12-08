@@ -20,7 +20,7 @@ static char get_tile(board *b, ssize_t x, ssize_t y)
     return (b->map[y][x]);
 }
 
-static tile *search_box(board *b, ssize_t x, ssize_t y)
+tile *search_box(board *b, ssize_t x, ssize_t y)
 {
     l_elem *e = b->game.boxes->first;
     tile *box;

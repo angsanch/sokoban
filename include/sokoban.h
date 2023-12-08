@@ -39,6 +39,7 @@ typedef struct board_data{
 board *create_empty_board(void);
 board *board_from_file(char const *file);
 void print_board(board *b);
+tile *search_box(board *b, ssize_t x, ssize_t y);
 void redraw(board *b);
 void destroy_board(board *b);
 ssize_t file_to_buffer(char const *path, char **buf);

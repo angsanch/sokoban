@@ -36,7 +36,7 @@ static int game(char *path)
 {
     int code = gameloop(path);
 
-    if (code == 0)
+    if (code == 1 || code == 0)
         return (0);
     if (code == -1)
         return (report_error("An error has ocurred during game\n"));

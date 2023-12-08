@@ -49,6 +49,20 @@ static int check_resize(void)
     return (result);
 }
 
+static int check_board(board *b)
+{
+    l_elem *e = b->game.locations->first;
+    tile *location;
+
+    while (e != NULL){
+        location = e->content;
+        if (search_box(b, location->x, location->y) == NULL)
+            return (0);
+        e = e->next;
+    }
+    return (1);
+}
+
 static int loop(char *path, board **b, int key_action)
 {
     int unchanged = !key_action;
@@ -62,7 +76,7 @@ static int loop(char *path, board **b, int key_action)
     if (check_resize() || !unchanged){
         display_board(*b);
     }
-    return (0);
+    return (check_board(*b));
 }
 
 static int keys(board **b)
@@ -89,7 +103,7 @@ int gameloop(char *path)
     keypad(stdscr, TRUE);
     while (key != 'q'){
         code = loop(path, &b, key > 0);
-        if (code < 0)
+        if (code != 0)
             break;
         key = keys(&b);
     }
