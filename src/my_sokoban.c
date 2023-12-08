@@ -29,17 +29,20 @@ static int print_help(void)
     my_putstr("containing ‘#’ for walls,\n");
     my_putstr("\t\t‘P’ for the player, ");
     my_putstr("‘X’ for boxes and ‘O’ for storage locations.\n");
-    return (84);
+    return (0);
 }
 
 static int game(char *path)
 {
-    board *b = board_from_file(path);
+    int code = gameloop(path);
 
-    if (b == NULL)
-        return (report_error("Error preparing the board\n"));
-    destroy_board(b);
-    return (0);
+    if (code == 0)
+        return (0);
+    if (code == -1)
+        return (report_error("An error has ocurred during game\n"));
+    if (code == -2)
+        return (report_error("Problem loading map\n"));
+    return (84);
 }
 
 int main(int argc, char **argv)

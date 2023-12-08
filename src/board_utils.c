@@ -32,6 +32,8 @@ static int prepare_gameinf(gameinf *game)
 
 void destroy_board(board *b)
 {
+    if (b == NULL)
+        return;
     destroy_gameinf(&b->game);
     free(b->buff);
     free(b->map);
@@ -78,4 +80,15 @@ ssize_t file_to_buffer(char const *path, char **buff)
         return (-1);
     }
     return (file_stat.st_size);
+}
+
+void print_board(board *b)
+{
+    size_t i = 0;
+
+    while(i < b->height){
+        my_putstr(b->map[i]);
+        my_putchar('\n');
+        i ++;
+    }
 }

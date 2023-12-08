@@ -10,14 +10,15 @@ CC=gcc
 CFLAGS=-Wall -Werror -Wextra
 
 C_FILES = src/board_utils.c \
-			src/prepare_board.c
+			src/prepare_board.c \
+			src/loop.c
 
 O_FILES = $(C_FILES:.c=.o)
 
 NAME=my_sokoban
 
 $(NAME): lib/libmy.a $(O_FILES)
-	$(CC) $(CFLAGS) -o $(NAME) src/$(NAME).c $(O_FILES) lib/libmy.a
+	$(CC) $(CFLAGS) -o $(NAME) src/$(NAME).c $(O_FILES) lib/libmy.a -lncurses
 
 all: $(NAME)
 
