@@ -11,7 +11,8 @@ CFLAGS=-Wall -Werror -Wextra
 
 C_FILES = src/board_utils.c \
 			src/prepare_board.c \
-			src/loop.c
+			src/loop.c \
+            src/move.c
 
 O_FILES = $(C_FILES:.c=.o)
 
