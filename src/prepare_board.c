@@ -57,7 +57,7 @@ static int analize_chars(board *b, size_t y)
 
 static int check_board(board *b)
 {
-    size_t y = 0;
+    ssize_t y = 0;
 
     while (y < b->height){
         if (!analize_chars(b, y))
@@ -69,7 +69,7 @@ static int check_board(board *b)
 
 static int parse_buffer(board *b)
 {
-    size_t i = 0;
+    ssize_t i = 0;
     size_t len;
     char *next = b->buff;
 

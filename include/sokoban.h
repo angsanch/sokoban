@@ -29,7 +29,7 @@ typedef struct game_info{
 
 typedef struct board_data{
     size_t max_width;
-    size_t height;
+    ssize_t height;
     ssize_t buff_size;
     char *buff;
     char **map;
@@ -42,5 +42,6 @@ void print_board(board *b);
 void destroy_board(board *b);
 ssize_t file_to_buffer(char const *path, char **buf);
 int gameloop(char *path);
+void move_soko(board *b, int key);
 
 #endif

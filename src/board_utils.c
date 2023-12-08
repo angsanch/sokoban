@@ -84,9 +84,9 @@ ssize_t file_to_buffer(char const *path, char **buff)
 
 void print_board(board *b)
 {
-    size_t i = 0;
+    ssize_t i = 0;
 
-    while(i < b->height){
+    while (i < b->height){
         my_putstr(b->map[i]);
         my_putchar('\n');
         i ++;

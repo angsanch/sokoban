@@ -12,8 +12,8 @@
 static void display_board(board *b)
 {
     size_t x;
-    size_t y;
-    size_t i = 0;
+    ssize_t y;
+    ssize_t i = 0;
     char *error = "The terminal is too small, please make it bigger";
 
     getmaxyx(stdscr, y, x);
@@ -49,9 +49,9 @@ static int check_resize(void)
     return (result);
 }
 
-static int loop(char *path, board **b)
+static int loop(char *path, board **b, int key_action)
 {
-    int unchanged = 1;
+    int unchanged = !key_action;
 
     if (*b == NULL){
         *b = board_from_file(path);
@@ -74,7 +74,7 @@ static int keys(board **b)
         *b = NULL;
     }
     if (key >= DOWN && key <= RIGHT)
-        my_printf("move");
+        move_soko(*b, key);
     return (key);
 }
 
@@ -87,8 +87,8 @@ int gameloop(char *path)
     initscr();
     noecho();
     keypad(stdscr, TRUE);
-    while (key != 27){
-        code = loop(path, &b);
+    while (key != 'q'){
+        code = loop(path, &b, key > 0);
         if (code < 0)
             break;
         key = keys(&b);
