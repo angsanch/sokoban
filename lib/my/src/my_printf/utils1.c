@@ -5,13 +5,7 @@
 ** Useful functions
 */
 
-#include <stdint.h>
-#include <stddef.h>
-#include <stdarg.h>
-#include <stdlib.h>
-#include "../../include/my_printf.h"
-#include "../../include/my.h"
-#include <stdio.h>
+#include "../../include/my_printf_utils.h"
 
 static long long int get_lld(int length, va_list *ap)
 {
@@ -79,10 +73,10 @@ char *my_lluitoa_base(unsigned long long int nb, char const *base,
     int num_size = my_numlen_base(nb, base_size);
     char *result;
 
-    if (min_len < 0)
-        min_len = 0;
+    min_len = ((min_len - 1) * (min_len >= 0)) + 1;
     if (num_size < min_len)
         num_size = min_len;
+    num_size *= !(min_len == 0 && nb == 0);
     result = malloc(sizeof(char) * (num_size + 1));
     if (result == NULL)
         return (NULL);
@@ -96,7 +90,7 @@ char *my_lluitoa_base(unsigned long long int nb, char const *base,
     return (result);
 }
 
-char *prepare_parts(parameter *param, char *sign, char *number)
+char *prepare_parts(parameter_t *param, char *sign, char *number)
 {
     size_t len = my_strlen(sign) + my_strlen(number);
     size_t min_len = param->width;
@@ -105,7 +99,7 @@ char *prepare_parts(parameter *param, char *sign, char *number)
 
     if (len > min_len)
         used = len;
-    result = malloc(sizeof(char) * (used + 1));
+    result = my_calloc(sizeof(char), (used + 1));
     if (result == NULL)
         return (NULL);
     if (!param->flags[0])
@@ -119,26 +113,7 @@ char *prepare_parts(parameter *param, char *sign, char *number)
     return (result);
 }
 
-static void set_sign(parameter *param, int plus, char *sign)
-{
-    my_memset(sign, '\0', 3);
-    if (!plus)
-        sign[0] = '-';
-    if (param->flags[1] && plus)
-        sign[0] = '+';
-    if (param->flags[2] && sign[0] == 0)
-        sign[0] = ' ';
-    if (param->flags[3]){
-        if (param->specifier == 'o')
-            my_strcpy(sign, "0");
-        if (param->specifier == 'x')
-            my_strcpy(sign, "0x");
-        if (param->specifier == 'X')
-        my_strcpy(sign, "0X");
-    }
-}
-
-char *signed_decimal_integer(parameter *param, va_list *ap, int n)
+char *signed_decimal_integer(parameter_t *param, va_list *ap, int n)
 {
     long long int num = get_lld(param->length, ap);
     unsigned long long int nb = num;
@@ -161,25 +136,7 @@ char *signed_decimal_integer(parameter *param, va_list *ap, int n)
     return (result);
 }
 
-static void set_base(char specifier, char *base)
-{
-    switch (specifier){
-        case 'u':
-            my_strcpy(base, "0123456789");
-            break;
-        case 'o':
-            my_strcpy(base, "01234567");
-            break;
-        case 'x':
-            my_strcpy(base, "0123456789abcdef");
-            break;
-        case 'X':
-            my_strcpy(base, "0123456789ABCDEF");
-            break;
-    }
-}
-
-char *unsigned_decimal_integer(parameter *param, va_list *ap, int n)
+char *unsigned_decimal_integer(parameter_t *param, va_list *ap, int n)
 {
     unsigned long long int num = get_llu(param->length, ap);
     char *parsed_number;
@@ -190,7 +147,11 @@ char *unsigned_decimal_integer(parameter *param, va_list *ap, int n)
 
     (void)n;
     set_sign(param, 1, sign);
+    if (num == 0)
+        sign[0] = 0;
     set_base(param->specifier, base);
+    if (param->flags[4])
+        min_len = param->width;
     parsed_number = my_lluitoa_base(num, base, min_len);
     if (parsed_number == NULL)
         return (NULL);

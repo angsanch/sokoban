@@ -5,7 +5,7 @@
 ** Duplicate string
 */
 
-#include "../../include/my.h"
+#include "../../include/basic_utils.h"
 
 char *my_strdup(char const *src)
 {

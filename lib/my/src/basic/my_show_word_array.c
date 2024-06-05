@@ -5,7 +5,7 @@
 ** Print string array
 */
 
-#include "../../include/my.h"
+#include "../../include/basic_utils.h"
 
 void my_show_word_array(char *const *tab)
 {

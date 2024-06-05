@@ -1,15 +1,13 @@
 /*
 ** EPITECH PROJECT, 2023
-** parse_parameter.c
+** parse_parameter_t.c
 ** File description:
 ** Parse data into struct
 */
 
-#include <stdlib.h>
-#include "../../include/my_printf.h"
-#include "../../include/my.h"
+#include "../../include/my_printf_utils.h"
 
-static char flags_called(char const *format, parameter *p, int i)
+static char flags_called(char const *format, parameter_t *p, int i)
 {
     int index = my_strchr_index("-+ #0", format[i]);
 
@@ -22,7 +20,7 @@ static char flags_called(char const *format, parameter *p, int i)
     return (i);
 }
 
-static char width_called(char const *format, parameter *p, int i)
+static char width_called(char const *format, parameter_t *p, int i)
 {
     if (format[i] == '*'){
         p->width = -1;
@@ -34,7 +32,7 @@ static char width_called(char const *format, parameter *p, int i)
     return (my_intlen(p->width) + i);
 }
 
-static int precision_called(char const *format, parameter *p, int i)
+static int precision_called(char const *format, parameter_t *p, int i)
 {
     if (format[i] != '.')
         return (i);
@@ -43,13 +41,15 @@ static int precision_called(char const *format, parameter *p, int i)
         p->precision = -2;
         return (i + 1);
     }
-    if (!my_isnumeric(format[i]))
+    if (!my_isnumeric(format[i])){
+        p->precision = 0;
         return (i);
+    }
     p->precision = my_getnbr(format + i);
     return (my_intlen(p->precision) + i);
 }
 
-static int length_called(char const *format, parameter *p, int i)
+static int length_called(char const *format, parameter_t *p, int i)
 {
     p->length = my_strchr_index("hhlljztL", format[i]) + 1;
     if (p->length == 0)
@@ -72,10 +72,10 @@ static int length_called(char const *format, parameter *p, int i)
     return (i + 1);
 }
 
-parameter *create_param(void)
+parameter_t *create_param(void)
 {
     int i = 0;
-    parameter *p = malloc(sizeof(parameter) * 1);
+    parameter_t *p = malloc(sizeof(parameter_t) * 1);
 
     if (p == NULL)
         return (NULL);
@@ -91,13 +91,13 @@ parameter *create_param(void)
     return (p);
 }
 
-void destroy_param(parameter *p)
+void destroy_param(parameter_t *p)
 {
     free(p->str);
     free(p);
 }
 
-int param_eq(parameter *p1, parameter *p2)
+int param_eq(parameter_t *p1, parameter_t *p2)
 {
     int i = 0;
 
@@ -117,9 +117,9 @@ int param_eq(parameter *p1, parameter *p2)
     return (1);
 }
 
-parameter *parse_parameter(char const *format, int *i)
+parameter_t *parse_parameter_t(char const *format, int *i)
 {
-    parameter *data = create_param();
+    parameter_t *data = create_param();
 
     if (data == NULL)
         return (NULL);

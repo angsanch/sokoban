@@ -1,0 +1,11 @@
+{
+	"files.associations": {
+		"structs.h": "c",
+		"linked_list_utils.h": "c",
+		"linked_list.h": "c",
+		"basic_utils.h": "c",
+		"my_printf_utils.h": "c",
+		"engine.h": "c",
+		"engine_utils.h": "c"
+	}
+}

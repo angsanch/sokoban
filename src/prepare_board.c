@@ -5,12 +5,11 @@
 ** Make board file usable
 */
 
-#include "../include/my.h"
 #include "../include/sokoban.h"
 
-static int analize_tile(board *b, size_t x, size_t y, tile **t)
+static int analize_tile(board_t *b, size_t x, size_t y, tile_t **t)
 {
-    l_list *lists[] = {b->game.boxes, b->game.locations};
+    l_list_t *lists[] = {b->game.boxes, b->game.locations};
 
     switch (b->map[y][x]){
         case '#':
@@ -22,7 +21,7 @@ static int analize_tile(board *b, size_t x, size_t y, tile **t)
             *t = NULL;
             break;
         case 'P':
-            if (b->game.player.x != -1 ||  b->game.player.y != -1)
+            if (b->game.player.x != -1 || b->game.player.y != -1)
                 return (0);
             b->game.player = **t;
             break;
@@ -32,14 +31,14 @@ static int analize_tile(board *b, size_t x, size_t y, tile **t)
     return (1);
 }
 
-static int analize_chars(board *b, size_t y)
+static int analize_chars(board_t *b, size_t y)
 {
     size_t x = 0;
-    tile *t = NULL;
+    tile_t *t = NULL;
 
     while (b->map[y][x] != '\0'){
         if (t == NULL)
-            t = malloc(sizeof(tile) * 1);
+            t = malloc(sizeof(tile_t) * 1);
         if (t == NULL)
             return (0);
         t->x = x;
@@ -55,7 +54,7 @@ static int analize_chars(board *b, size_t y)
     return (1);
 }
 
-static int check_board(board *b)
+static int check_board(board_t *b)
 {
     ssize_t y = 0;
 
@@ -67,7 +66,7 @@ static int check_board(board *b)
     return (b->game.boxes->len >= b->game.locations->len);
 }
 
-static int parse_buffer(board *b)
+static int parse_buffer(board_t *b)
 {
     ssize_t i = 0;
     size_t len;
@@ -89,9 +88,9 @@ static int parse_buffer(board *b)
     return (check_board(b));
 }
 
-board *board_from_file(char const *path)
+board_t *board_from_file(char const *path)
 {
-    board *b;
+    board_t *b;
 
     b = create_empty_board();
     if (b == NULL)

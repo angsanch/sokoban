@@ -5,6 +5,9 @@
 \#*\#
 *~
 
-include/my.h
-include/structs.h
+include/basic.h
+include/engine.h
+include/linked_list.h
+include/macros.h
+include/my_printf.h
 my_sokoban

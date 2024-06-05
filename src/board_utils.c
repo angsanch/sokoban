@@ -5,19 +5,16 @@
 ** Manage the boards
 */
 
-#include <stdlib.h>
-#include <fcntl.h>
 #include <sys/stat.h>
-#include "../include/my.h"
 #include "../include/sokoban.h"
 
-static void destroy_gameinf(gameinf *game)
+static void destroy_gameinf(gameinf_t *game)
 {
     list_destroy(game->boxes);
     list_destroy(game->locations);
 }
 
-static int prepare_gameinf(gameinf *game)
+static int prepare_gameinf(gameinf_t *game)
 {
     game->boxes = list_create(&free);
     game->locations = list_create(&free);
@@ -30,7 +27,7 @@ static int prepare_gameinf(gameinf *game)
     return (1);
 }
 
-void destroy_board(board *b)
+void destroy_board(board_t *b)
 {
     if (b == NULL)
         return;
@@ -40,9 +37,9 @@ void destroy_board(board *b)
     free(b);
 }
 
-board *create_empty_board(void)
+board_t *create_empty_board(void)
 {
-    board *b = malloc(sizeof(board) * 1);
+    board_t *b = malloc(sizeof(board_t) * 1);
 
     if (b == NULL)
         return (NULL);
@@ -82,7 +79,7 @@ ssize_t file_to_buffer(char const *path, char **buff)
     return (file_stat.st_size);
 }
 
-void print_board(board *b)
+void print_board(board_t *b)
 {
     ssize_t i = 0;
 
@@ -97,21 +94,21 @@ void print_board(board *b)
 
 static void draw_location_list(void *location_void, void *b_void)
 {
-    tile *location = location_void;
-    board *b = b_void;
+    tile_t *location = location_void;
+    board_t *b = b_void;
 
     b->map[location->y][location->x] = 'O';
 }
 
 static void draw_box_list(void *location_void, void *b_void)
 {
-    tile *location = location_void;
-    board *b = b_void;
+    tile_t *location = location_void;
+    board_t *b = b_void;
 
     b->map[location->y][location->x] = 'X';
 }
 
-void redraw(board *b)
+void redraw(board_t *b)
 {
     ssize_t i = 0;
 
@@ -120,7 +117,7 @@ void redraw(board *b)
             b->buff[i] = ' ';
         i ++;
     }
-    list_iter_data(b->game.locations, b, &draw_location_list);
-    list_iter_data(b->game.boxes, b, &draw_box_list);
+    list_iter(b->game.locations, &draw_location_list, b);
+    list_iter(b->game.boxes, &draw_box_list, b);
     b->map[b->game.player.y][b->game.player.x] = 'P';
 }

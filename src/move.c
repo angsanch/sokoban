@@ -6,9 +6,8 @@
 */
 
 #include "../include/sokoban.h"
-#include "../include/my.h"
 
-static char get_tile(board *b, ssize_t x, ssize_t y)
+static char get_tile(board_t *b, ssize_t x, ssize_t y)
 {
     ssize_t line_width;
 
@@ -20,10 +19,10 @@ static char get_tile(board *b, ssize_t x, ssize_t y)
     return (b->map[y][x]);
 }
 
-tile *search_box(board *b, ssize_t x, ssize_t y)
+tile_t *search_box(board_t *b, ssize_t x, ssize_t y)
 {
-    l_elem *e = b->game.boxes->first;
-    tile *box;
+    l_elem_t *e = b->game.boxes->first;
+    tile_t *box;
 
     while (e != NULL){
         box = e->content;
@@ -34,13 +33,13 @@ tile *search_box(board *b, ssize_t x, ssize_t y)
     return (NULL);
 }
 
-static void vertical_move(board *b, int y)
+static void vertical_move(board_t *b, int y)
 {
-    tile *player = &b->game.player;
-    tile new = *player;
+    tile_t *player = &b->game.player;
+    tile_t new = *player;
     char m_tile = get_tile(b, new.x, new.y + y);
     char n_tile = get_tile(b, new.x, new.y + y + y);
-    tile *box;
+    tile_t *box;
 
     if (m_tile == 'X'){
         box = search_box(b, player->x, player->y + y);
@@ -56,13 +55,13 @@ static void vertical_move(board *b, int y)
     }
 }
 
-static void horizontal_move(board *b, int x)
+static void horizontal_move(board_t *b, int x)
 {
-    tile *player = &b->game.player;
-    tile new = *player;
+    tile_t *player = &b->game.player;
+    tile_t new = *player;
     char m_tile = get_tile(b, new.x + x, new.y);
     char n_tile = get_tile(b, new.x + x + x, new.y);
-    tile *box;
+    tile_t *box;
 
     if (m_tile == 'X'){
         box = search_box(b, player->x + x, player->y);
@@ -78,7 +77,7 @@ static void horizontal_move(board *b, int x)
     }
 }
 
-void move_soko(board *b, int key)
+void move_soko(board_t *b, int key)
 {
     switch (key){
         case UP:

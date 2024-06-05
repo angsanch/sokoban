@@ -5,20 +5,7 @@
 ** Search for squares
 */
 
-#include <unistd.h>
-#include "../include/my.h"
 #include "../include/sokoban.h"
-
-static int report_error(char *str)
-{
-    size_t i = 0;
-
-    while (str[i] != '\0'){
-        write(2, str + i, 1);
-        i ++;
-    }
-    return (84);
-}
 
 static int print_help(void)
 {
@@ -39,16 +26,16 @@ static int game(char *path)
     if (code == 1 || code == 0)
         return (0);
     if (code == -1)
-        return (report_error("An error has ocurred during game\n"));
+        return (report_error("An error has ocurred during game\n", 84));
     if (code == -2)
-        return (report_error("Problem loading map\n"));
+        return (report_error("Problem loading map\n", 84));
     return (84);
 }
 
 int main(int argc, char **argv)
 {
     if (argc != 2)
-        return (report_error("Invalid amount of parameters.\n"));
+        return (report_error("Invalid amount of parameters.\n", 84));
     if (my_strcmp(argv[1], "-h") == 0)
         return (print_help());
     else

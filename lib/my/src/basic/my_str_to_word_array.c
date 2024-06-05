@@ -5,7 +5,7 @@
 ** Word split
 */
 
-#include "../../include/my.h"
+#include "../../include/basic_utils.h"
 
 static int is_alnum(char c)
 {

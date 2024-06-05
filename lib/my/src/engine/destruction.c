@@ -5,37 +5,35 @@
 ** Destroy the structs
 */
 
-#include "../../include/my.h"
+#include "../../include/engine_utils.h"
 
-void destroy_sound(dn_sound *sound)
-{
-    sfSoundBuffer_destroy(sound->sound);
-    free(sound);
-}
-
-void destroy_texture(dn_texture *texture)
+void destroy_texture(dn_texture_t *texture)
 {
     sfTexture_destroy(texture->texture);
+    free(texture->id);
     free(texture);
 }
 
-void destroy_sprite(dn_sprite *sprite)
+void destroy_sprite(dn_sprite_t *sprite)
 {
     sfSprite_destroy(sprite->sprite);
+    sfRectangleShape_destroy(sprite->display.outline);
+    sfCircleShape_destroy(sprite->display.circle);
+    sfText_destroy(sprite->display.text);
     sprite->destroy_data(sprite->data);
     free(sprite);
 }
 
-void destroy_scene(dn_scene *scene)
+void destroy_scene(dn_scene_t *scene)
 {
     list_destroy(scene->sprites);
     list_destroy(scene->textures);
-    list_destroy(scene->sounds);
     sfMusic_destroy(scene->music);
+    free(scene->id);
     free(scene);
 }
 
-void destroy_window(dn_window *window)
+void destroy_window(dn_window_t *window)
 {
     sfRenderWindow_close(window->window);
     sfRenderWindow_destroy(window->window);

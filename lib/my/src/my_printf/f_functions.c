@@ -5,9 +5,7 @@
 ** print formats
 */
 
-#include <stdarg.h>
-#include "../../include/my.h"
-#include "../../include/my_printf.h"
+#include "../../include/my_printf_utils.h"
 
 static size_t my_dputstr(int fd, char const *str)
 {
@@ -51,6 +49,18 @@ int my_sprintf(char *str, char const *format, ...)
     len = my_strlen(result);
     free(result);
     return (len);
+}
+
+int my_sbufferf(char **str, char const *format, ...)
+{
+    va_list ap;
+
+    va_start(ap, format);
+    *str = genericf(format, &ap);
+    va_end(ap);
+    if (*str == NULL)
+        return (-1);
+    return (my_strlen(*str));
 }
 
 int my_dprintf(int fd, char const *format, ...)

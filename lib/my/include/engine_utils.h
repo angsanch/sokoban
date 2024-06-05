@@ -8,11 +8,18 @@
 #ifndef ENGINE_UTILS_H_
     #define ENGINE_UTILS_H_
 
-    #include "structs.h"
+    #include "engine.h"
+    #include "macros.h"
 
-void destroy_sound(void *sound);
-void destroy_texture(void *texture);
-void destroy_sprite(void *sprite);
-void destroy_scene(void *scene);
+typedef struct collision_quarter {
+    dn_sprite_t **sprites;
+    size_t amount;
+    sfIntRect *rect;
+} quarter_info_t;
+
+void destroy_texture(dn_texture_t *texture);
+void destroy_sprite(dn_sprite_t *sprite);
+void destroy_scene(dn_scene_t *scene);
+void collisions(dn_window_t *window);
 
 #endif

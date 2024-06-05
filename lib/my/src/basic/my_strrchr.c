@@ -17,5 +17,5 @@ char *my_strrchr(char const *str, char c)
             last = i;
         i ++;
     }
-    return ((char *)str + last);
+    return ((str[last] == c) ? (char *)(str + last) : NULL);
 }

@@ -5,21 +5,17 @@
 ** general function for my_printf
 */
 
-#include <stdarg.h>
-#include <stdlib.h>
-#include "../../include/my_printf.h"
-#include "../../include/my.h"
-#include <stdio.h>
+#include "../../include/my_printf_utils.h"
 
 char const *specifiers = "diuoxXfFeEgGaAcspn%";
-char *(*param_str[])(parameter *param, va_list *ap, int n) = {
+char *(*param_str[])(parameter_t *param, va_list *ap, int n) = {
     &signed_decimal_integer, &signed_decimal_integer,
     &unsigned_decimal_integer, &unsigned_decimal_integer,
     &unsigned_decimal_integer, &unsigned_decimal_integer,
+    &print_float, &print_float,
     &signed_decimal_integer, &signed_decimal_integer,
     &signed_decimal_integer, &signed_decimal_integer,
-    &signed_decimal_integer, &signed_decimal_integer,
-    &signed_decimal_integer, &signed_decimal_integer,
+    &print_float, &print_float,
     &character_print, &string_print,
     &pointer_print, &length_exporter,
     &print_percentage
@@ -27,10 +23,10 @@ char *(*param_str[])(parameter *param, va_list *ap, int n) = {
 
 static void list_destroy_param(void *p)
 {
-    destroy_param((parameter *)p);
+    destroy_param((parameter_t *)p);
 }
 
-char *string_parameter(parameter *param, va_list *ap, int *n)
+char *string_parameter_t(parameter_t *param, va_list *ap, int *n)
 {
     int index = my_strchr_index(specifiers, param->specifier);
     char *str;
@@ -42,15 +38,17 @@ char *string_parameter(parameter *param, va_list *ap, int *n)
     if (param->precision == -2)
         param->precision = va_arg(*ap, int);
     str = (*param_str[index])(param, ap, *n);
+    if (str == NULL)
+        return (NULL);
     *n += my_strlen(str);
     return (str);
 }
 
-static l_list *parse_format(char const *format, va_list *ap, int *n)
+static l_list_t *parse_format(char const *format, va_list *ap, int *n)
 {
     int i = 0;
-    l_list *params = list_create(&list_destroy_param);
-    parameter *new;
+    l_list_t *params = list_create(&list_destroy_param);
+    parameter_t *new;
 
     if (params == NULL)
         return (NULL);
@@ -60,22 +58,22 @@ static l_list *parse_format(char const *format, va_list *ap, int *n)
             *n += 1;
             continue;
         }
-        new = parse_parameter(format, &i);
+        new = parse_parameter_t(format, &i);
         if (new == NULL || !list_append(params, new))
             return (list_destroy(params));
-        new->str = string_parameter(new, ap, n);
+        new->str = string_parameter_t(new, ap, n);
         if (new->str == NULL)
             return (list_destroy(params));
     }
     return (params);
 }
 
-void prepare_result(char *result, l_list *params, char const *format)
+void prepare_result(char *result, l_list_t *params, char const *format)
 {
     int i = 0;
     int n = 0;
     int len;
-    parameter *p;
+    parameter_t *p;
 
     while (format[i]){
         if (format[i] != '%' && format[i]){
@@ -97,7 +95,7 @@ void prepare_result(char *result, l_list *params, char const *format)
 char *genericf(char const *format, va_list *ap)
 {
     int n = 0;
-    l_list *params = parse_format(format, ap, &n);
+    l_list_t *params = parse_format(format, ap, &n);
     char *result = malloc(sizeof(char) * (n + 1));
 
     if (params == NULL)

@@ -5,12 +5,12 @@
 ** Advance a tick
 */
 
-#include "../../include/my.h"
+#include "../../include/engine_utils.h"
 
 static void call_sprite_tick(void *sprite_void, void *env_void)
 {
-    dn_sprite *sprite = sprite_void;
-    dn_envinfo *env = env_void;
+    dn_sprite_t *sprite = sprite_void;
+    dn_envinfo_t *env = env_void;
 
     if (sprite->tick != NULL)
         (sprite->tick)(sprite, env);
@@ -18,43 +18,32 @@ static void call_sprite_tick(void *sprite_void, void *env_void)
 
 static void call_sprite_event(void *sprite_void, void *env_void)
 {
-    dn_sprite *sprite = sprite_void;
-    dn_envinfo *env = env_void;
+    dn_sprite_t *sprite = sprite_void;
+    dn_envinfo_t *env = env_void;
 
     if (sprite->event != NULL)
         (sprite->event)(sprite, env);
 }
 
-static void display_sprite(void *sprite_void, void *window_void)
-{
-    dn_sprite *sprite = sprite_void;
-    sfRenderWindow *window = window_void;
-
-    if (sprite->texture == NULL)
-        return;
-    sfSprite_setPosition(sprite->sprite, sprite->position);
-    sfSprite_setTexture(sprite->sprite, sprite->texture->texture, sfTrue);
-    sfSprite_setTextureRect(sprite->sprite, sprite->rect);
-    sfRenderWindow_drawSprite(window, sprite->sprite, NULL);
-}
-
 static float get_timedelta(sfClock *clock)
 {
-    float timedelta = sfTime_asSeconds(sfClock_getElapsedTime(clock));
+    float timedelta = sfClock_getElapsedTime(clock).microseconds / 1000;
 
     sfClock_restart(clock);
     return (timedelta);
 }
 
-int tick_window(dn_window *window)
+int tick_window(dn_window_t *window)
 {
     sfEvent event;
-    dn_envinfo env = {get_timedelta(window->clock), window, &event};
+    dn_envinfo_t env = {get_timedelta(window->clock), window, &event};
 
     sfRenderWindow_clear(window->window, sfBlack);
-    list_iter_data(window->scene->sprites, &env, &call_sprite_tick);
+    list_iter(window->scene->sprites, &call_sprite_tick, &env);
+    if (window->to_be_closed)
+        return (0);
     while (sfRenderWindow_pollEvent(window->window, &event)){
-        list_iter_data(window->scene->sprites, &env, &call_sprite_event);
+        list_iter(window->scene->sprites, &call_sprite_event, &env);
         if (event.type == sfEvtClosed)
             return (0);
         if (event.type == sfEvtResized){
@@ -62,7 +51,8 @@ int tick_window(dn_window *window)
             window->size.y = event.size.height;
         }
     }
-    list_iter_data(window->scene->sprites, window->window, &display_sprite);
+    collisions(window);
+    list_iter(window->scene->sprites, &display_sprite, window);
     sfRenderWindow_display(window->window);
     return (1);
 }

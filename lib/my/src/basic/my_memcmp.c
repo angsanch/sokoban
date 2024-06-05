@@ -14,7 +14,7 @@ int my_memcmp(const void *s1, const void *s2, size_t n)
     const char *str2 = s2;
 
     while (i != n){
-        if (str1[i] == str2[i])
+        if (str1[i] != str2[i])
             return (str1[i] - str2[i]);
         i++;
     }

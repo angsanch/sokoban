@@ -5,11 +5,10 @@
 ** Game loop
 */
 
-#include "../include/my.h"
 #include "../include/sokoban.h"
 #include <ncurses.h>
 
-static void display_board(board *b)
+static void display_board(board_t *b)
 {
     size_t x;
     ssize_t y;
@@ -49,10 +48,10 @@ static int check_resize(void)
     return (result);
 }
 
-static int check_board(board *b)
+static int check_board(board_t *b)
 {
-    l_elem *e = b->game.locations->first;
-    tile *location;
+    l_elem_t *e = b->game.locations->first;
+    tile_t *location;
 
     while (e != NULL){
         location = e->content;
@@ -63,7 +62,7 @@ static int check_board(board *b)
     return (1);
 }
 
-static int loop(char *path, board **b, int key_action)
+static int loop(char *path, board_t **b, int key_action)
 {
     int unchanged = !key_action;
 
@@ -79,7 +78,7 @@ static int loop(char *path, board **b, int key_action)
     return (check_board(*b));
 }
 
-static int keys(board **b)
+static int keys(board_t **b)
 {
     int key = getch();
 
@@ -94,7 +93,7 @@ static int keys(board **b)
 
 int gameloop(char *path)
 {
-    board *b = NULL;
+    board_t *b = NULL;
     int code = 0;
     int key = 0;
 
